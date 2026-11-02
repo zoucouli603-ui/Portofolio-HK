@@ -12,7 +12,7 @@ PROFIL = {
     "metiers": "Graphiste, Photographe & Monteur Vidéo",
     "stats": [
         ("5+", "Ans d'expérience"),
-        ("120+", "Projets réalisés"),
+        ("500+", "Projets réalisés"),
         ("98%", "Clients satisfaits"),
         ("100%", "Sur mesure"),
     ],
