@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ profil.nom }} | {{ profil.marque }}{% endblock %}</title>
+    <meta name="description" content="{{ profil.marque }} — {{ profil.metiers }}.">
+    <meta name="theme-color" content="#040814">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    colors: {
+                        night: '#040814',   // fond le plus profond
+                        navy: '#0B132B',    // fond du dégradé
+                        glass: '#0f1b33',   // cartes
+                        brand: { DEFAULT: '#3B82F6', light: '#60A5FA' }
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Le plugin Intersect doit être chargé avant Alpine -->
+    <script>
+        // État global de la modale de devis, accessible depuis tous les boutons
+        document.addEventListener('alpine:init', () => Alpine.store('devis', { ouvert: false }));
+    </script>    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style type="text/tailwindcss">
+        @layer components {
+            /* Carte effet verre sur fond bleu */
+            .glass { @apply bg-glass/70 backdrop-blur-md border border-blue-900/50; }
+            .glass-hover { @apply transition duration-300 hover:border-brand/60 hover:shadow-xl hover:shadow-blue-500/10; }
+            /* Bouton d'action principal */
+            .btn { @apply inline-flex items-center justify-center px-6 py-3 rounded-full bg-brand text-white font-semibold shadow-lg shadow-blue-500/20 transition duration-300 hover:bg-blue-600 hover:shadow-blue-500/40 hover:scale-105 active:scale-95; }
+            /* Bouton « Demander un devis » : bleu lumineux, effet verre */
+            .btn-devis { @apply inline-flex items-center justify-center px-5 py-2 rounded-full text-white font-semibold border border-blue-300/40 bg-gradient-to-r from-blue-500/80 to-blue-400/60 backdrop-blur-md shadow-lg shadow-blue-500/40 ring-1 ring-white/10 transition duration-300 hover:from-blue-500 hover:to-blue-400 hover:shadow-blue-400/60 hover:scale-105 active:scale-95; }
+            .btn-outline { @apply inline-flex items-center justify-center px-6 py-3 rounded-full border border-blue-800/60 text-white transition duration-300 hover:border-brand hover:text-brand-light hover:bg-blue-500/10; }
+        }
+    </style>
+    <style>
+        [x-cloak] { display: none !important; }
+        body { background: linear-gradient(180deg, #040814 0%, #0B132B 100%) fixed; }
+        .glow { background: radial-gradient(circle at 50% 0%, rgba(59,130,246,.22), transparent 60%); }
+
+        /* Lueurs d'arrière-plan : apparition douce et décalée */
+        .orb { position: absolute; border-radius: 9999px; filter: blur(90px); pointer-events: none; opacity: 0; animation: orbIn 2.4s ease forwards, orbDrift 14s ease-in-out infinite alternate; }
+        .orb-a { width: 460px; height: 460px; right: -80px; top: -60px; background: rgba(59,130,246,.30); animation-delay: .2s, 0s; }
+        .orb-b { width: 300px; height: 300px; left: -90px; bottom: -40px; background: rgba(96,165,250,.16); animation-delay: 1.2s, 2s; }
+        @keyframes orbIn { to { opacity: 1; } }
+        @keyframes orbDrift { from { transform: translate(0,0); } to { transform: translate(-24px, 22px); } }
+
+        /* Badge suspendu : lévitation lente, pivot en haut du tour de cou */
+        .badge-scene { width: 280px; height: 470px; position: relative; perspective: 1000px; }
+        .badge-swing { position: absolute; inset: 0; transform-origin: 50% 0; animation: badgeFloat 7s ease-in-out infinite, badgeIn 1.2s cubic-bezier(.2,.8,.2,1) both; }
+        @keyframes badgeFloat {
+            0%, 100% { transform: translateY(0) rotate(-1.6deg); }
+            50% { transform: translateY(-14px) rotate(1.6deg); }
+        }
+        @keyframes badgeIn { from { opacity: 0; transform: translateY(-60px) rotate(-6deg); } }
+        .lanyard { position: absolute; top: -120px; width: 26px; height: 200px; background: repeating-linear-gradient(180deg, #1d4ed8 0 14px, #2563eb 14px 28px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); }
+        .lanyard-l { left: calc(50% - 22px); transform-origin: bottom; transform: rotate(-24deg); }
+        .lanyard-r { left: calc(50% - 4px); transform-origin: bottom; transform: rotate(24deg); }
+        .badge-clip { position: absolute; left: 50%; top: 64px; width: 34px; height: 30px; margin-left: -17px; border-radius: 6px 6px 10px 10px; background: linear-gradient(180deg,#e2e8f0,#94a3b8); box-shadow: 0 2px 6px rgba(0,0,0,.5); z-index: 3; }
+        .badge-card { position: absolute; left: 0; right: 0; top: 86px; bottom: 0; border-radius: 22px; padding: 26px 18px 14px; text-align: center;
+            background: linear-gradient(160deg, rgba(20,34,62,.96), rgba(8,14,30,.98));
+            border: 1px solid rgba(96,165,250,.28);
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,.8), 0 0 60px -10px rgba(59,130,246,.45), inset 0 1px 0 rgba(255,255,255,.08); }
+        .badge-slot { position: absolute; top: 10px; left: 50%; width: 54px; height: 8px; margin-left: -27px; border-radius: 9999px; background: #040814; box-shadow: inset 0 1px 2px rgba(0,0,0,.8); }
+        .badge-brand { font-weight: 800; letter-spacing: -.02em; color: #fff; font-size: 15px; margin-bottom: 10px; }
+        .badge-brand span { color: #3B82F6; }
+        .badge-photo { width: 150px; height: 170px; margin: 0 auto; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,.18); background: #0B132B; }
+        .badge-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
+        .badge-name { margin-top: 14px; font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.01em; }
+        .badge-role { margin-top: 2px; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: #60A5FA; white-space: nowrap; }
+        .badge-foot { position: absolute; left: 18px; right: 18px; bottom: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #64748b; letter-spacing: .1em; }
+        .badge-bars { width: 54px; height: 16px; background: repeating-linear-gradient(90deg, #94a3b8 0 2px, transparent 2px 4px, #94a3b8 4px 5px, transparent 5px 8px); opacity: .7; }
+        @media (max-width: 1023px) { .badge-scene { margin-top: 3rem; } }
+        @media (prefers-reduced-motion: reduce) { .badge-swing, .orb { animation: none !important; opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+    </style>
+</head>
+<body x-data class="text-slate-300 font-sans antialiased min-h-screen flex flex-col">
+
+    <header x-data="{ open: false }" class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-night/70 border-b border-blue-900/50">
+        <nav class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="{{ url_for('main.index') }}" class="flex items-center shrink-0" aria-label="{{ profil.marque }} — accueil">
+                <img src="{{ url_for('static', filename='images/IMG_7830.PNG') }}" alt="Logo {{ profil.marque }}" width="931" height="503"
+                     class="h-11 w-auto drop-shadow-[0_0_12px_rgba(59,130,246,.45)] transition duration-300 hover:scale-105 hover:drop-shadow-[0_0_16px_rgba(96,165,250,.7)]">
+            </a>
+
+            <ul class="hidden md:flex items-center gap-8 text-sm text-slate-400">
+                <li><a href="{{ url_for('main.index') }}" class="hover:text-white transition">Accueil</a></li>
+                <li><a href="{{ url_for('main.index') }}#apropos" class="hover:text-white transition">À propos</a></li>
+                <li><a href="{{ url_for('main.index') }}#projets" class="hover:text-white transition">Réalisations</a></li>
+                <li><a href="{{ url_for('main.index') }}#tarifs" class="hover:text-white transition">Tarifs</a></li>
+                <li><a href="{{ url_for('main.index') }}#contact" class="hover:text-white transition">Contact</a></li>
+            </ul>
+
+            <div class="hidden md:flex items-center gap-3">
+                <button type="button" @click="$store.devis.ouvert = true" class="btn-devis !py-2 text-sm">Demander un devis</button>
+            </div>
+
+            <button @click="open = !open" class="md:hidden p-2 rounded-lg border border-blue-800/60 text-white" aria-label="Menu" :aria-expanded="open">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+            </button>
+        </nav>
+
+        <div x-show="open" x-cloak x-transition @click.outside="open = false" class="md:hidden border-t border-blue-900/50 bg-night/95 px-6 py-4 space-y-3 text-sm">
+            <a @click="open=false" href="{{ url_for('main.index') }}" class="block hover:text-white">Accueil</a>
+            <a @click="open=false" href="{{ url_for('main.index') }}#apropos" class="block hover:text-white">À propos</a>
+            <a @click="open=false" href="{{ url_for('main.index') }}#projets" class="block hover:text-white">Réalisations</a>
+            <a @click="open=false" href="{{ url_for('main.index') }}#tarifs" class="block hover:text-white">Tarifs</a>
+            <a @click="open=false" href="{{ url_for('main.index') }}#contact" class="block hover:text-white">Contact</a>
+            <button type="button" @click="open = false; $store.devis.ouvert = true"             class="btn-devis w-full !py-2 text-sm">Demander un devis</button>
+                    </div>
+    </header>
+
+    <main class="flex-1 pt-16">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-blue-900/50 py-8 px-6 text-center text-sm text-slate-500">
+        © 2026 {{ profil.nom }} — {{ profil.marque }}. Tous droits réservés.
+    </footer>
+
+    <!-- Modale de devis (état global Alpine.store('devis')) : envoie le message vers WhatsApp -->
+    <div id="devis-modal"
+         x-data="{
+            nom: '', prestation: 'Design Graphique', description: '', budget: '', erreur: false,
+            envoyer() {
+                if (!this.nom.trim() || !this.description.trim()) { this.erreur = true; return; }
+                const lignes = ['*Demande de devis — HK Production*', '',
+                    '*Nom :* ' + this.nom.trim(),
+                    '*Prestation :* ' + this.prestation,
+                    '*Description :* ' + this.description.trim()];
+                if (this.budget.trim()) lignes.push('*Budget estimé :* ' + this.budget.trim());
+                window.open('https://wa.me/22374016702?text=' + encodeURIComponent(lignes.join('\n')), '_blank', 'noopener');
+                this.erreur = false;
+                $store.devis.ouvert = false;
+            }
+         }"
+         @keydown.escape.window="$store.devis.ouvert = false"
+         x-show="$store.devis.ouvert" x-cloak x-transition.opacity
+         @click.self="$store.devis.ouvert = false"
+         class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-night/80 backdrop-blur-sm"
+         role="dialog" aria-modal="true" aria-labelledby="devis-titre">
+        <form @submit.prevent="envoyer()" novalidate
+              class="glass w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl shadow-blue-500/20">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="uppercase tracking-[0.3em] text-xs text-brand-light mb-2">Devis gratuit</p>
+                    <h2 id="devis-titre" class="text-2xl font-extrabold text-white">Demander un devis</h2>
+                </div>
+                <button type="button" @click="$store.devis.ouvert = false" class="text-slate-400 hover:text-white" aria-label="Fermer">✕</button>
+            </div>
+
+            <label class="block">
+                <span class="text-sm text-slate-300">Nom / Prénom</span>
+                <input type="text" x-model="nom" autocomplete="name" placeholder="Votre nom complet"
+                       class="mt-1 w-full rounded-xl bg-night/60 border border-blue-800/60 px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand">
+            </label>
+            <label class="block">
+                <span class="text-sm text-slate-300">Type de prestation</span>
+                <select x-model="prestation"
+                        class="mt-1 w-full rounded-xl bg-night border border-blue-800/60 px-4 py-2.5 text-white focus:outline-none focus:border-brand">
+                    <option>Design Graphique</option>
+                    <option>Photographie</option>
+                    <option>Vidéographie</option>
+                    <option>Autre</option>
+                </select>
+            </label>
+            <label class="block">
+                <span class="text-sm text-slate-300">Description du projet / besoins</span>
+                <textarea x-model="description" rows="4" placeholder="Décrivez brièvement votre projet…"
+                          class="mt-1 w-full rounded-xl bg-night/60 border border-blue-800/60 px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand"></textarea>
+            </label>
+            <label class="block">
+                <span class="text-sm text-slate-300">Budget estimé <span class="text-slate-500">(optionnel)</span></span>
+                <input type="text" x-model="budget" placeholder="Ex. 25 000 FCFA"
+                       class="mt-1 w-full rounded-xl bg-night/60 border border-blue-800/60 px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand">
+            </label>
+
+            <p x-show="erreur" x-cloak class="text-sm text-red-300">Merci d'indiquer votre nom et la description du projet.</p>
+            <button type="submit" class="btn w-full">Envoyer via WhatsApp</button>
+        </form>
+    </div>
+</body>
+</html>

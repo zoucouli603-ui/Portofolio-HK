@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "macros.html" import reveal %}
+
+{% block title %}{{ projet.titre }} | {{ profil.marque }}{% endblock %}
+
+{% block content %}
+<div class="glow pt-12 pb-20 px-6">
+    <div class="max-w-5xl mx-auto" {{ reveal() }}>
+        <a href="{{ url_for('main.index') }}#projets" class="btn-outline group mb-8 !py-2 text-sm">
+            <span class="mr-2 transition group-hover:-translate-x-1">←</span> Retour aux projets
+        </a>
+
+        <div class="relative">
+            <div class="absolute -inset-3 rounded-3xl bg-gradient-to-tr from-brand/40 to-transparent blur-2xl opacity-60"></div>
+            {% if projet.video %}
+            <video src="{{ projet.image|image_url }}" controls playsinline preload="metadata"
+                   class="relative mx-auto w-auto max-w-full max-h-[85vh] rounded-3xl border border-blue-900/50 bg-night"></video>
+            {% else %}
+            <img src="{{ projet.image|image_url }}" alt="{{ projet.titre }}"
+                 class="relative mx-auto w-full {{ 'max-h-[85vh] w-auto object-contain' if projet.affiche or projet.portrait else 'max-h-[600px] object-cover' }} rounded-3xl border border-blue-900/50">
+            {% endif %}
+        </div>
+
+        <div class="glass rounded-3xl p-6 sm:p-10 mt-8">
+            <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-4">{{ projet.categorie }}</span>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white leading-tight">{{ projet.titre }}</h1>
+            <p class="mt-4 text-lg text-slate-400">{{ projet.description_courte }}</p>
+            <div class="h-px bg-gradient-to-r from-brand/70 to-transparent my-8"></div>
+            <h2 class="text-sm uppercase tracking-[0.3em] text-brand-light mb-4">À propos du projet</h2>
+            <p class="text-slate-300 leading-relaxed text-lg max-w-3xl">{{ projet.description_longue }}</p>
+
+            <div class="mt-10 flex flex-col sm:flex-row gap-4">
+                <a href="{{ url_for('main.index') }}#projets" class="btn">← Retour</a>
+                <a href="{{ url_for('main.index') }}#contact" class="btn-outline">Discuter d'un projet</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

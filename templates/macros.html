@@ -1,0 +1,6 @@
+{# Attributs Alpine d'apparition au scroll (plugin Intersect). Usage : <div {{ reveal(150) }}> #}
+{% macro reveal(delay=0) -%}
+x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease {{ delay }}ms, transform .7s ease {{ delay }}ms"
+{%- endmacro %}

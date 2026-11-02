@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% from "macros.html" import reveal %}
+
+{% block content %}
+
+<!-- Hero -->
+<section id="accueil" class="relative overflow-hidden pt-16 pb-24 px-6">
+    <!-- Lueurs décalées, à apparition différée -->
+    <div class="orb orb-a" aria-hidden="true"></div>
+    <div class="orb orb-b" aria-hidden="true"></div>
+
+    <div class="relative max-w-6xl mx-auto grid lg:grid-cols-[1.15fr_.85fr] gap-10 lg:gap-6 items-center">
+        <div {{ reveal() }} class="text-left">
+            <p class="inline-flex items-center gap-2 text-xs text-slate-400 border-l border-brand pl-3 mb-8">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-light animate-pulse"></span>
+                Graphiste, photographe &amp; monteur vidéo · Mali
+            </p>
+            <h1 class="text-[2.6rem] sm:text-6xl lg:text-7xl font-extrabold text-white leading-[1.02] tracking-tight">
+                Moi c'est Hamed.<br>
+                <span class="text-slate-400 font-light">Je fabrique des images</span><br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-brand-light to-brand">qu'on n'oublie pas.</span>
+            </h1>
+            <p class="mt-8 text-base sm:text-lg text-slate-400 max-w-xl leading-relaxed">
+                Logos, affiches, shootings, clips : je travaille avec les marques, les artistes et les entrepreneurs d'ici et d'ailleurs.
+                Tu me dis ton idée, on la rend belle, et on la livre vite.
+            </p>
+            <div class="mt-10 flex flex-col sm:flex-row gap-4">
+                <a href="#projets" class="btn">Voir ce que j'ai fait</a>
+                <a href="#tarifs" class="btn-outline">Les tarifs</a>
+            </div>
+            <p class="mt-8 text-sm text-slate-500">Une question ? <a href="#contact" class="text-brand-light underline underline-offset-4 decoration-blue-900 hover:decoration-brand-light transition">Écris-moi directement.</a></p>
+        </div>
+
+        <!-- Badge suspendu (lanyard) -->
+        <div class="badge-scene mx-auto" aria-label="Badge professionnel de {{ profil.nom }}">
+            <div class="badge-swing">
+                <div class="lanyard lanyard-l"></div>
+                <div class="lanyard lanyard-r"></div>
+                <div class="badge-clip"></div>
+                <div class="badge-card">
+                    <div class="badge-slot"></div>
+                    <p class="badge-brand">HK<span>.</span>Production</p>
+                    <div class="badge-photo">
+                        <img src="{{ url_for('static', filename='images/hamed.jpg.png') }}" alt="{{ profil.nom }}" loading="eager">
+                    </div>
+                    <p class="badge-name">{{ profil.nom }}</p>
+                    <p class="badge-role">Graphiste · Photographe · Monteur</p>
+                    <div class="badge-foot">
+                        <span>ID&nbsp;HK-001</span>
+                        <span class="badge-bars" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques -->
+<section class="px-6 pb-20">
+    <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+        {% for valeur, libelle in profil.stats %}
+        <div {{ reveal(loop.index0 * 100) }} class="glass glass-hover rounded-2xl p-6 text-center hover:-translate-y-1">
+            <p class="text-3xl sm:text-4xl font-extrabold text-white">{{ valeur }}</p>
+            <p class="text-xs sm:text-sm text-brand-light mt-2">{{ libelle }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- À propos -->
+<section id="apropos" class="py-20 px-6">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+        <div {{ reveal() }} class="relative group max-w-md mx-auto w-full">
+            <div class="absolute -inset-3 rounded-3xl bg-gradient-to-tr from-brand/50 to-transparent blur-2xl opacity-50 group-hover:opacity-90 transition"></div>
+            <img src="{{ url_for('static', filename='images/hamed.jpg.png') }}" alt="Portrait de {{ profil.nom }}"
+                 class="relative w-full aspect-[4/5] object-cover rounded-3xl border border-blue-900/50 grayscale group-hover:grayscale-0 transition duration-700">
+        </div>
+        <div {{ reveal(150) }}>
+            <p class="uppercase tracking-[0.3em] text-xs text-brand-light mb-4">À propos</p>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-6">{{ profil.nom }}</h2>
+            <p class="text-slate-400 leading-relaxed mb-4">
+                J'ai lancé <strong class="text-white">{{ profil.marque }}</strong> parce que j'aime les belles images, Je suis passionné par la créativité et la communication visuelle.
+                 À travers <strong class="text-white">{{ profil.marque }}</strong>, je réalise des affiches publicitaires, des visuels, des shootings photo, des vidéos promotionnelles et des contenus digitaux.
+                 j'aide chacun à avoir une image qui lui ressemble.
+                 <strong class="text-white">{{ profil.marque }}</strong> - Votre vision, notre créativité.
+            </p>
+            <p class="text-slate-400 leading-relaxed mb-8">
+                Rien n'est fait en série : chaque logo, chaque affiche, chaque montage est pensé pour toi, et je ne rends rien que je ne montrerais pas fièrement.
+            </p>
+            <h3 class="text-sm uppercase tracking-widest text-slate-500 mb-4">Outils maîtrisés au quotidien</h3>
+            <ul class="grid grid-cols-1 min-[420px]:grid-cols-2 xl:grid-cols-3 gap-3">
+                {% for outil in profil.outils %}
+                <li class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+                    {% if outil.sigle %}
+                    <span class="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-base font-extrabold border"
+                          style="background: {{ outil.fond }}; color: {{ outil.texte }}; border-color: {{ outil.texte }}" aria-hidden="true">{{ outil.sigle }}</span>
+                    {% elif outil.svg == 'davinci' %}
+                    <svg class="shrink-0 w-10 h-10 rounded-xl" viewBox="0 0 40 40" aria-hidden="true">
+                        <rect width="40" height="40" rx="9" fill="#1B1B1F"/>
+                        <circle cx="20" cy="12.5" r="6.5" fill="#F9544B" fill-opacity=".9"/>
+                        <circle cx="13" cy="24.5" r="6.5" fill="#5BD16B" fill-opacity=".9"/>
+                        <circle cx="27" cy="24.5" r="6.5" fill="#3B9BFF" fill-opacity=".9"/>
+                    </svg>
+                    {% elif outil.svg == 'capcut' %}
+                    <span class="shrink-0 w-10 h-10 rounded-xl overflow-hidden bg-black border border-blue-800/60" aria-hidden="true">
+                        <img src="{{ url_for('static', filename="images/Capture d'écran 2026-11-01 185326.png") }}" alt="" class="w-full h-full object-cover scale-[1.6]">
+                    </span>
+                    {% endif %}
+                    <span class="text-sm font-semibold text-white leading-tight">{{ outil.nom }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Réalisations -->
+<section id="projets" class="py-20 px-6 bg-night/40" x-data="{ filtre: 'all' }">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-10" {{ reveal() }}>
+            <p class="uppercase tracking-[0.3em] text-xs text-brand-light mb-4">Portfolio</p>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Quelques projets dont je suis fier</h2>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-3 mb-10">
+            <button @click="filtre = 'all'" :class="filtre === 'all' ? 'bg-brand text-white border-brand font-semibold shadow-lg shadow-blue-500/20' : 'border-blue-800/60 text-slate-300 hover:border-brand hover:text-brand-light'"
+                    class="px-5 py-2 rounded-full text-sm border transition">Tous</button>
+            {% for cat in projets|map(attribute='categorie')|unique %}
+            <button @click="filtre = {{ cat|tojson|forceescape }}" :class="filtre === {{ cat|tojson|forceescape }} ? 'bg-brand text-white border-brand font-semibold shadow-lg shadow-blue-500/20' : 'border-blue-800/60 text-slate-300 hover:border-brand hover:text-brand-light'"
+                    class="px-5 py-2 rounded-full text-sm border transition">{{ cat }}</button>
+            {% endfor %}
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% for p in projets %}
+            <div x-show="filtre === 'all' || filtre === {{ p.categorie|tojson|forceescape }}" x-transition.opacity>
+            <div {{ reveal((loop.index0 % 3) * 500) }}>
+            <a href="{{ url_for('main.project', id=p.id) }}"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    {% if p.video %}
+                    <video src="{{ p.image|image_url }}#t=0.5" preload="metadata" muted loop playsinline aria-label="{{ p.titre }}"
+                           @mouseenter="$el.play()" @mouseleave="$el.pause()"
+                           class="w-full h-full object-cover group-hover:scale-105 transition duration-700"></video>
+                    <span class="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-night/70 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-xs" aria-hidden="true">▶</span>
+                    {% else %}
+                    <img src="{{ url_for('static', filename=p.image) if not p.image.startswith('http') else p.image }}" alt="{{ p.titre }}" loading="lazy"
+                         class="w-full h-full {{ 'object-contain p-3' if p.affiche else ('object-cover object-top' if p.portrait else 'object-cover') }} group-hover:scale-105 transition duration-700">
+                                             {% endif %}
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">{{ p.categorie }}</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">{{ p.titre }}</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">{{ p.description_courte }}</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Tarifs -->
+<section id="tarifs" class="py-20 px-6 scroll-mt-16">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12" {{ reveal() }}>
+            <p class="uppercase tracking-[0.3em] text-xs text-brand-light mb-4">Tarifs</p>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Des prix clairs, un travail sur mesure</h2>
+        </div>
+
+        {% macro ligne(nom, prix) -%}
+        <li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">{{ nom }}</span>
+            <span class="text-right font-semibold {{ 'text-brand-light' if prix == 'Sur devis' else 'text-white' }}">{{ prix }}</span>
+        </li>
+        {%- endmacro %}
+
+        <!-- Visuels graphiques -->
+        <div {{ reveal() }} class="glass glass-hover rounded-3xl p-6 sm:p-8">
+            <h3 class="text-xl font-bold text-white mb-1">Visuels graphiques</h3>
+            <p class="text-sm text-brand-light mb-4">Design</p>
+            <ul class="grid md:grid-cols-2 md:gap-x-12">
+                {% for nom, prix in tarifs_design %}{{ ligne(nom, prix) }}{% endfor %}
+            </ul>
+            <p class="mt-6 text-xs sm:text-sm text-slate-400 italic">NB : Les tarifs indiqués concernent uniquement la création graphique, les frais d'impression ne sont pas inclus et varient selon le format, le support et la quantité.</p>
+        </div>
+
+        <!-- Photographie & vidéographie -->
+        <div class="grid lg:grid-cols-2 gap-6 mt-6">
+            <div {{ reveal(100) }} class="glass glass-hover rounded-3xl p-6 sm:p-8">
+                <h3 class="text-xl font-bold text-white mb-1">Photographie</h3>
+                <p class="text-sm text-brand-light mb-4">Shootings &amp; événements</p>
+                <ul>{% for nom, prix in tarifs_photo %}{{ ligne(nom, prix) }}{% endfor %}</ul>
+            </div>
+            <div {{ reveal(200) }} class="glass glass-hover rounded-3xl p-6 sm:p-8">
+                <h3 class="text-xl font-bold text-white mb-1">Vidéographie</h3>
+                <p class="text-sm text-brand-light mb-4">Montage &amp; production vidéo</p>
+                <ul>{% for nom, prix in tarifs_video %}{{ ligne(nom, prix) }}{% endfor %}</ul>
+            </div>
+        </div>
+        <p class="mt-6 text-xs sm:text-sm text-slate-400 italic">NB : Les tarifs peuvent varier selon les besoins, la durée et le type de prestation.</p>
+
+        <div class="text-center mt-10">
+            <button type="button" @click="$store.devis.ouvert = true" class="btn">Demander un devis</button>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="py-20 px-6">
+    <div class="max-w-4xl mx-auto text-center" {{ reveal() }}>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Travaillons ensemble</h2>
+        <p class="text-slate-400 mb-10">Un projet en tête ? Parlons-en et donnons-lui vie.</p>
+        <div class="grid sm:grid-cols-2 gap-4 text-left">
+            {# fond : couleur du badge (celle de l'icône, pour des coins sans bordure brute) ; zoom : recadrage sur l'icône #}
+            {% set contacts = [
+                {"libelle": "Téléphone", "valeur": profil.telephone, "href": "tel:" ~ profil.telephone_href, "externe": false, "icone": "Capture d'écran 2026-11-01 185647.png",                 "fond": "#000000", "zoom": 1.12, "origine": "50% 50%", "texte": "whitespace-nowrap"},
+                                {"libelle": "E-mail", "valeur": profil.email, "href": "mailto:" ~ profil.email, "externe": false, "icone": "Capture d'écran 2026-11-01 185658.png", "fond": "#3d9bff", "zoom": 1.8, "origine": "50% 53%", "texte": "break-all"},
+                                {"libelle": "TikTok", "valeur": profil.tiktok, "href": profil.tiktok_url, "externe": true, "icone": "Capture d'écran 2026-11-01 185719.png", "fond": "#000000", "zoom": 2.0, "origine": "46% 50%", "texte": "break-words"},
+                                {"libelle": "Snapchat", "valeur": profil.snapchat, "href": none, "externe": false, "icone": "Capture d'écran 2026-11-01 185709.png", "fond": "#f2e300", "zoom": 1.15, "origine": "50% 50%", "texte": "break-words"},
+            ] %}
+            {% for c in contacts %}
+            {% set classes = "flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 transform hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20" %}
+            <div {{ reveal(loop.index0 * 120) }}>
+            {% if c.href %}
+            <a href="{{ c.href }}"{% if c.externe %} target="_blank" rel="noopener noreferrer"{% endif %} class="{{ classes }}">
+            {% else %}
+            <div class="{{ classes }}">
+            {% endif %}
+                <span class="shrink-0 w-10 h-10 rounded-xl overflow-hidden border border-blue-800/60" style="background: {{ c.fond }}" aria-hidden="true">
+                    <img src="{{ url_for('static', filename='images/' ~ c.icone) }}" alt="" class="w-full h-full object-cover" style="transform: scale({{ c.zoom }}); transform-origin: {{ c.origine }}">
+                </span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-xs uppercase tracking-widest text-brand-light">{{ c.libelle }}</span>
+                    <span class="block text-sm font-semibold text-white leading-tight mt-0.5 {{ c.texte }}">{{ c.valeur }}</span>
+                </span>
+            {% if c.href %}</a>{% else %}</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

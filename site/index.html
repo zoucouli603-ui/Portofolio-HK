@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamed Keita | HK Production</title>
+    <meta name="description" content="HK Production — Graphiste, Photographe &amp; Monteur Vidéo.">
+    <meta name="theme-color" content="#040814">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    colors: {
+                        night: '#040814',   // fond le plus profond
+                        navy: '#0B132B',    // fond du dégradé
+                        glass: '#0f1b33',   // cartes
+                        brand: { DEFAULT: '#3B82F6', light: '#60A5FA' }
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Le plugin Intersect doit être chargé avant Alpine -->
+    <script>
+        // État global de la modale de devis, accessible depuis tous les boutons
+        document.addEventListener('alpine:init', () => Alpine.store('devis', { ouvert: false }));
+    </script>    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style type="text/tailwindcss">
+        @layer components {
+            /* Carte effet verre sur fond bleu */
+            .glass { @apply bg-glass/70 backdrop-blur-md border border-blue-900/50; }
+            .glass-hover { @apply transition duration-300 hover:border-brand/60 hover:shadow-xl hover:shadow-blue-500/10; }
+            /* Bouton d'action principal */
+            .btn { @apply inline-flex items-center justify-center px-6 py-3 rounded-full bg-brand text-white font-semibold shadow-lg shadow-blue-500/20 transition duration-300 hover:bg-blue-600 hover:shadow-blue-500/40 hover:scale-105 active:scale-95; }
+            /* Bouton « Demander un devis » : bleu lumineux, effet verre */
+            .btn-devis { @apply inline-flex items-center justify-center px-5 py-2 rounded-full text-white font-semibold border border-blue-300/40 bg-gradient-to-r from-blue-500/80 to-blue-400/60 backdrop-blur-md shadow-lg shadow-blue-500/40 ring-1 ring-white/10 transition duration-300 hover:from-blue-500 hover:to-blue-400 hover:shadow-blue-400/60 hover:scale-105 active:scale-95; }
+            .btn-outline { @apply inline-flex items-center justify-center px-6 py-3 rounded-full border border-blue-800/60 text-white transition duration-300 hover:border-brand hover:text-brand-light hover:bg-blue-500/10; }
+        }
+    </style>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body x-data class="text-slate-300 font-sans antialiased min-h-screen flex flex-col">
+
+    <header x-data="{ open: false }" class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-night/70 border-b border-blue-900/50">
+        <nav class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center shrink-0" aria-label="HK Production — accueil">
+                <img src="./static/images/IMG_7830.PNG" alt="Logo HK Production" width="931" height="503"
+                     class="h-11 w-auto drop-shadow-[0_0_12px_rgba(59,130,246,.45)] transition duration-300 hover:scale-105 hover:drop-shadow-[0_0_16px_rgba(96,165,250,.7)]">
+            </a>
+
+            <ul class="hidden md:flex items-center gap-8 text-sm text-slate-400">
+                <li><a href="#" class="hover:text-white transition">Accueil</a></li>
+                <li><a href="#apropos" class="hover:text-white transition">À propos</a></li>
+                <li><a href="#projets" class="hover:text-white transition">Réalisations</a></li>
+                <li><a href="#tarifs" class="hover:text-white transition">Tarifs</a></li>
+                <li><a href="#contact" class="hover:text-white transition">Contact</a></li>
+            </ul>
+
+            <div class="hidden md:flex items-center gap-3">
+                <button type="button" @click="$store.devis.ouvert = true" class="btn-devis !py-2 text-sm">Demander un devis</button>
+            </div>
+
+            <button @click="open = !open" class="md:hidden p-2 rounded-lg border border-blue-800/60 text-white" aria-label="Menu" :aria-expanded="open">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+            </button>
+        </nav>
+
+        <div x-show="open" x-cloak x-transition @click.outside="open = false" class="md:hidden border-t border-blue-900/50 bg-night/95 px-6 py-4 space-y-3 text-sm">
+            <a @click="open=false" href="#" class="block hover:text-white">Accueil</a>
+            <a @click="open=false" href="#apropos" class="block hover:text-white">À propos</a>
+            <a @click="open=false" href="#projets" class="block hover:text-white">Réalisations</a>
+            <a @click="open=false" href="#tarifs" class="block hover:text-white">Tarifs</a>
+            <a @click="open=false" href="#contact" class="block hover:text-white">Contact</a>
+            <button type="button" @click="open = false; $store.devis.ouvert = true"             class="btn-devis w-full !py-2 text-sm">Demander un devis</button>
+                    </div>
+    </header>
+
+    <main class="flex-1 pt-16">
+        
+
+<!-- Hero -->
+<section id="accueil" class="relative overflow-hidden pt-16 pb-24 px-6">
+    <!-- Lueurs décalées, à apparition différée -->
+    <div class="orb orb-a" aria-hidden="true"></div>
+    <div class="orb orb-b" aria-hidden="true"></div>
+
+    <div class="relative max-w-6xl mx-auto grid lg:grid-cols-[1.15fr_.85fr] gap-10 lg:gap-6 items-center">
+        <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms" class="text-left">
+            <p class="inline-flex items-center gap-2 text-xs text-slate-400 border-l border-brand pl-3 mb-8">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-light animate-pulse"></span>
+                Graphiste, photographe &amp; monteur vidéo · Mali
+            </p>
+            <h1 class="text-[2.6rem] sm:text-6xl lg:text-7xl font-extrabold text-white leading-[1.02] tracking-tight">
+                Moi c'est Hamed.<br>
+                <span class="text-slate-400 font-light">Je fabrique des images</span><br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-brand-light to-brand">qu'on n'oublie pas.</span>
+            </h1>
+            <p class="mt-8 text-base sm:text-lg text-slate-400 max-w-xl leading-relaxed">
+                Logos, affiches, shootings, clips : je travaille avec les marques, les artistes et les entrepreneurs d'ici et d'ailleurs.
+                Tu me dis ton idée, on la rend belle, et on la livre vite.
+            </p>
+            <div class="mt-10 flex flex-col sm:flex-row gap-4">
+                <a href="#projets" class="btn">Voir ce que j'ai fait</a>
+                <a href="#tarifs" class="btn-outline">Les tarifs</a>
+            </div>
+            <p class="mt-8 text-sm text-slate-500">Une question ? <a href="#contact" class="text-brand-light underline underline-offset-4 decoration-blue-900 hover:decoration-brand-light transition">Écris-moi directement.</a></p>
+        </div>
+
+        <!-- Badge suspendu (lanyard) -->
+        <div class="badge-scene mx-auto" aria-label="Badge professionnel de Hamed Keita">
+            <div class="badge-swing">
+                <div class="lanyard lanyard-l"></div>
+                <div class="lanyard lanyard-r"></div>
+                <div class="badge-clip"></div>
+                <div class="badge-card">
+                    <div class="badge-slot"></div>
+                    <p class="badge-brand">HK<span>.</span>Production</p>
+                    <div class="badge-photo">
+                        <img src="./static/images/hamed.jpg.png" alt="Hamed Keita" loading="eager">
+                    </div>
+                    <p class="badge-name">Hamed Keita</p>
+                    <p class="badge-role">Graphiste · Photographe · Monteur</p>
+                    <div class="badge-foot">
+                        <span>ID&nbsp;HK-001</span>
+                        <span class="badge-bars" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques -->
+<section class="px-6 pb-20">
+    <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+        
+        <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms" class="glass glass-hover rounded-2xl p-6 text-center hover:-translate-y-1">
+            <p class="text-3xl sm:text-4xl font-extrabold text-white">5+</p>
+            <p class="text-xs sm:text-sm text-brand-light mt-2">Ans d&#39;expérience</p>
+        </div>
+        
+        <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 100ms, transform .7s ease 100ms" class="glass glass-hover rounded-2xl p-6 text-center hover:-translate-y-1">
+            <p class="text-3xl sm:text-4xl font-extrabold text-white">120+</p>
+            <p class="text-xs sm:text-sm text-brand-light mt-2">Projets réalisés</p>
+        </div>
+        
+        <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 200ms, transform .7s ease 200ms" class="glass glass-hover rounded-2xl p-6 text-center hover:-translate-y-1">
+            <p class="text-3xl sm:text-4xl font-extrabold text-white">98%</p>
+            <p class="text-xs sm:text-sm text-brand-light mt-2">Clients satisfaits</p>
+        </div>
+        
+        <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 300ms, transform .7s ease 300ms" class="glass glass-hover rounded-2xl p-6 text-center hover:-translate-y-1">
+            <p class="text-3xl sm:text-4xl font-extrabold text-white">100%</p>
+            <p class="text-xs sm:text-sm text-brand-light mt-2">Sur mesure</p>
+        </div>
+        
+    </div>
+</section>
+
+<!-- À propos -->
+<section id="apropos" class="py-20 px-6">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+        <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms" class="relative group max-w-md mx-auto w-full">
+            <div class="absolute -inset-3 rounded-3xl bg-gradient-to-tr from-brand/50 to-transparent blur-2xl opacity-50 group-hover:opacity-90 transition"></div>
+            <img src="./static/images/hamed.jpg.png" alt="Portrait de Hamed Keita"
+                 class="relative w-full aspect-[4/5] object-cover rounded-3xl border border-blue-900/50 grayscale group-hover:grayscale-0 transition duration-700">
+        </div>
+        <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 150ms, transform .7s ease 150ms">
+            <p class="uppercase tracking-[0.3em] text-xs text-brand-light mb-4">À propos</p>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-6">Hamed Keita</h2>
+            <p class="text-slate-400 leading-relaxed mb-4">
+                J'ai lancé <strong class="text-white">HK Production</strong> parce que j'aime les belles images, Je suis passionné par la créativité et la communication visuelle.
+                 À travers <strong class="text-white">HK Production</strong>, je réalise des affiches publicitaires, des visuels, des shootings photo, des vidéos promotionnelles et des contenus digitaux.
+                 j'aide chacun à avoir une image qui lui ressemble.
+                 <strong class="text-white">HK Production</strong> - Votre vision, notre créativité.
+            </p>
+            <p class="text-slate-400 leading-relaxed mb-8">
+                Rien n'est fait en série : chaque logo, chaque affiche, chaque montage est pensé pour toi, et je ne rends rien que je ne montrerais pas fièrement.
+            </p>
+            <h3 class="text-sm uppercase tracking-widest text-slate-500 mb-4">Outils maîtrisés au quotidien</h3>
+            <ul class="grid grid-cols-1 min-[420px]:grid-cols-2 xl:grid-cols-3 gap-3">
+                
+                <li class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+                    
+                    <span class="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-base font-extrabold border"
+                          style="background: #001E36; color: #31A8FF; border-color: #31A8FF" aria-hidden="true">Ps</span>
+                    
+                    <span class="text-sm font-semibold text-white leading-tight">Photoshop</span>
+                </li>
+                
+                <li class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+                    
+                    <span class="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-base font-extrabold border"
+                          style="background: #330000; color: #FF9A00; border-color: #FF9A00" aria-hidden="true">Ai</span>
+                    
+                    <span class="text-sm font-semibold text-white leading-tight">Illustrator</span>
+                </li>
+                
+                <li class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+                    
+                    <span class="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-base font-extrabold border"
+                          style="background: #00005B; color: #9999FF; border-color: #9999FF" aria-hidden="true">Ae</span>
+                    
+                    <span class="text-sm font-semibold text-white leading-tight">After Effects</span>
+                </li>
+                
+                <li class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+                    
+                    <span class="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-base font-extrabold border"
+                          style="background: #001E36; color: #31A8FF; border-color: #31A8FF" aria-hidden="true">Lr</span>
+                    
+                    <span class="text-sm font-semibold text-white leading-tight">Lightroom</span>
+                </li>
+                
+                <li class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+                    
+                    <svg class="shrink-0 w-10 h-10 rounded-xl" viewBox="0 0 40 40" aria-hidden="true">
+                        <rect width="40" height="40" rx="9" fill="#1B1B1F"/>
+                        <circle cx="20" cy="12.5" r="6.5" fill="#F9544B" fill-opacity=".9"/>
+                        <circle cx="13" cy="24.5" r="6.5" fill="#5BD16B" fill-opacity=".9"/>
+                        <circle cx="27" cy="24.5" r="6.5" fill="#3B9BFF" fill-opacity=".9"/>
+                    </svg>
+                    
+                    <span class="text-sm font-semibold text-white leading-tight">DaVinci Resolve</span>
+                </li>
+                
+                <li class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+                    
+                    <span class="shrink-0 w-10 h-10 rounded-xl overflow-hidden bg-black border border-blue-800/60" aria-hidden="true">
+                        <img src="./static/images/Capture%20d&#39;%C3%A9cran%202026-11-01%20185326.png" alt="" class="w-full h-full object-cover scale-[1.6]">
+                    </span>
+                    
+                    <span class="text-sm font-semibold text-white leading-tight">CapCut</span>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Réalisations -->
+<section id="projets" class="py-20 px-6 bg-night/40" x-data="{ filtre: 'all' }">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-10" x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+            <p class="uppercase tracking-[0.3em] text-xs text-brand-light mb-4">Portfolio</p>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Quelques projets dont je suis fier</h2>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-3 mb-10">
+            <button @click="filtre = 'all'" :class="filtre === 'all' ? 'bg-brand text-white border-brand font-semibold shadow-lg shadow-blue-500/20' : 'border-blue-800/60 text-slate-300 hover:border-brand hover:text-brand-light'"
+                    class="px-5 py-2 rounded-full text-sm border transition">Tous</button>
+            
+            <button @click="filtre = &#34;Design Graphique&#34;" :class="filtre === &#34;Design Graphique&#34; ? 'bg-brand text-white border-brand font-semibold shadow-lg shadow-blue-500/20' : 'border-blue-800/60 text-slate-300 hover:border-brand hover:text-brand-light'"
+                    class="px-5 py-2 rounded-full text-sm border transition">Design Graphique</button>
+            
+            <button @click="filtre = &#34;Photographie&#34;" :class="filtre === &#34;Photographie&#34; ? 'bg-brand text-white border-brand font-semibold shadow-lg shadow-blue-500/20' : 'border-blue-800/60 text-slate-300 hover:border-brand hover:text-brand-light'"
+                    class="px-5 py-2 rounded-full text-sm border transition">Photographie</button>
+            
+            <button @click="filtre = &#34;Montage vid\u00e9o&#34;" :class="filtre === &#34;Montage vid\u00e9o&#34; ? 'bg-brand text-white border-brand font-semibold shadow-lg shadow-blue-500/20' : 'border-blue-800/60 text-slate-300 hover:border-brand hover:text-brand-light'"
+                    class="px-5 py-2 rounded-full text-sm border transition">Montage vidéo</button>
+            
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Design Graphique&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+            <a href="projet/1.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/diner-promo.jpg" alt="Affiche Dîner de Promo" loading="lazy"
+                         class="w-full h-full object-contain p-3 group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Design Graphique</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Affiche Dîner de Promo</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Conception visuelle élégante pour l&#39;événement « Dîner de Promo » (PSN1 Présente) à l&#39;Espace loisirs Koulouba.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Design Graphique&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 500ms, transform .7s ease 500ms">
+            <a href="projet/2.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/formation-audiovisuel.jpg" alt="Formation Pratique en Audio-Visuel" loading="lazy"
+                         class="w-full h-full object-contain p-3 group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Design Graphique</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Formation Pratique en Audio-Visuel</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Affiche publicitaire pour la formation pratique en montage, photographie et retouche photo (Magashop).</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Design Graphique&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 1000ms, transform .7s ease 1000ms">
+            <a href="projet/3.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/full-black.jpg" alt="Affiche Événement « Full Black »" loading="lazy"
+                         class="w-full h-full object-contain p-3 group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Design Graphique</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Affiche Événement « Full Black »</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Création de flyer stylisé pour l&#39;événement « Full Black » à la Maison des Jeunes.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Design Graphique&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+            <a href="projet/10.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/timfa.jpg" alt="Affiche Timfa" loading="lazy"
+                         class="w-full h-full object-contain p-3 group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Design Graphique</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Affiche Timfa</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Conception publicitaire et visuelle pour la marque Timfa.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Design Graphique&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 500ms, transform .7s ease 500ms">
+            <a href="projet/11.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/miss.jpg" alt="Affiche Miss / Événement Mode" loading="lazy"
+                         class="w-full h-full object-contain p-3 group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Design Graphique</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Affiche Miss / Événement Mode</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Visuel élégant pour élection ou événement de mode.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Design Graphique&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 1000ms, transform .7s ease 1000ms">
+            <a href="projet/12.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/event-rose.jpg" alt="Visuel Événementiel Rose" loading="lazy"
+                         class="w-full h-full object-contain p-3 group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Design Graphique</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Visuel Événementiel Rose</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Création graphique aux tons roses pour communication digitale.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Design Graphique&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+            <a href="projet/13.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/auto.jpg" alt="Visuel Automobile &amp; Prestige" loading="lazy"
+                         class="w-full h-full object-contain p-3 group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Design Graphique</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Visuel Automobile &amp; Prestige</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Affiche publicitaire orientée automobile et design haut de gamme.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Photographie&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 500ms, transform .7s ease 500ms">
+            <a href="projet/4.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/shooting-1.jpg" alt="Portrait &amp; Regard Urbain" loading="lazy"
+                         class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Photographie</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Portrait &amp; Regard Urbain</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Portrait au regard intense dans un décor urbain.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Photographie&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 1000ms, transform .7s ease 1000ms">
+            <a href="projet/5.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/shooting-2.jpg" alt="Immersion &amp; Mode Streetwear" loading="lazy"
+                         class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Photographie</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Immersion &amp; Mode Streetwear</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Shooting mode streetwear en immersion dans la ville.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Photographie&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+            <a href="projet/6.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/shooting-3.jpg" alt="Shooting Scène &amp; Événementiel" loading="lazy"
+                         class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Photographie</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Shooting Scène &amp; Événementiel</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Photographie de scène et d&#39;événement.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Photographie&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 500ms, transform .7s ease 500ms">
+            <a href="projet/14.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/shooting-4.jpg" alt="Cliché Artistique &amp; Lumière Naturelle" loading="lazy"
+                         class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Photographie</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Cliché Artistique &amp; Lumière Naturelle</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Cliché artistique travaillé en lumière naturelle.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Photographie&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 1000ms, transform .7s ease 1000ms">
+            <a href="projet/15.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/shooting-5.jpg" alt="Portrait Professionnel &amp; Prestation" loading="lazy"
+                         class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Photographie</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Portrait Professionnel &amp; Prestation</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Portrait professionnel soigné pour une prestation photo.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Photographie&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+            <a href="projet/16.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/shooting-6.jpg" alt="Ambiance de Groupe &amp; Authenticité" loading="lazy"
+                         class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Photographie</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Ambiance de Groupe &amp; Authenticité</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Photo de groupe pleine d&#39;ambiance et de spontanéité.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Photographie&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 500ms, transform .7s ease 500ms">
+            <a href="projet/17.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/shooting-7.jpg" alt="Série Mode &amp; Lifestyle" loading="lazy"
+                         class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Photographie</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Série Mode &amp; Lifestyle</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Série photo mode et lifestyle.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Photographie&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 1000ms, transform .7s ease 1000ms">
+            <a href="projet/18.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <img src="./static/images/shooting-8.jpg" alt="Regard Captivé &amp; Expression" loading="lazy"
+                         class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                                             
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Photographie</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Regard Captivé &amp; Expression</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Portrait centré sur le regard et l&#39;expression.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Montage vid\u00e9o&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+            <a href="projet/7.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <video src="./static/images/vid%C3%A9o-1.mp4#t=0.5" preload="metadata" muted loop playsinline aria-label="Couverture Événementielle &amp; Défilé"
+                           @mouseenter="$el.play()" @mouseleave="$el.pause()"
+                           class="w-full h-full object-cover group-hover:scale-105 transition duration-700"></video>
+                    <span class="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-night/70 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-xs" aria-hidden="true">▶</span>
+                    
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Montage vidéo</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Couverture Événementielle &amp; Défilé</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Captation et montage dynamique d&#39;événement culturel et mode.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Montage vid\u00e9o&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 500ms, transform .7s ease 500ms">
+            <a href="projet/8.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <video src="./static/images/vid%C3%A9o-2.mp4#t=0.5" preload="metadata" muted loop playsinline aria-label="Spot Publicitaire &amp; Brand Content"
+                           @mouseenter="$el.play()" @mouseleave="$el.pause()"
+                           class="w-full h-full object-cover group-hover:scale-105 transition duration-700"></video>
+                    <span class="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-night/70 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-xs" aria-hidden="true">▶</span>
+                    
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Montage vidéo</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Spot Publicitaire &amp; Brand Content</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Vidéo promotionnelle rythmée pour la mise en valeur de marque.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Montage vid\u00e9o&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 1000ms, transform .7s ease 1000ms">
+            <a href="projet/9.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <video src="./static/images/vid%C3%A9o-3.mp4#t=0.5" preload="metadata" muted loop playsinline aria-label="Reel &amp; Format Court TikTok / Instagram"
+                           @mouseenter="$el.play()" @mouseleave="$el.pause()"
+                           class="w-full h-full object-cover group-hover:scale-105 transition duration-700"></video>
+                    <span class="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-night/70 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-xs" aria-hidden="true">▶</span>
+                    
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Montage vidéo</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Reel &amp; Format Court TikTok / Instagram</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Montage dynamique optimisé pour l&#39;engagement sur les réseaux sociaux.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+            <div x-show="filtre === 'all' || filtre === &#34;Montage vid\u00e9o&#34;" x-transition.opacity>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+            <a href="projet/19.html"
+               class="glass glass-hover group relative block overflow-hidden rounded-3xl hover:-translate-y-2">
+                <div class="aspect-[4/3] overflow-hidden bg-night">
+                    
+                    <video src="./static/images/vid%C3%A9o-4.mp4#t=0.5" preload="metadata" muted loop playsinline aria-label="Immersion &amp; Prestation Scénique"
+                           @mouseenter="$el.play()" @mouseleave="$el.pause()"
+                           class="w-full h-full object-cover group-hover:scale-105 transition duration-700"></video>
+                    <span class="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-night/70 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-xs" aria-hidden="true">▶</span>
+                    
+                                         </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent"></div>
+                <div class="absolute bottom-0 inset-x-0 p-5 sm:p-6">
+                    <span class="inline-block text-xs px-3 py-1 rounded-full bg-brand text-white font-semibold mb-3">Montage vidéo</span>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Immersion &amp; Prestation Scénique</h3>
+                    <p class="text-sm text-slate-300 mt-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 overflow-hidden transition-all duration-500">Reportage et montage professionnel d&#39;événements publics.</p>
+                    <span class="inline-block mt-3 text-sm text-brand-light group-hover:translate-x-2 transition">Voir le projet →</span>
+                </div>
+            </a>
+            </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- Tarifs -->
+<section id="tarifs" class="py-20 px-6 scroll-mt-16">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12" x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+            <p class="uppercase tracking-[0.3em] text-xs text-brand-light mb-4">Tarifs</p>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Des prix clairs, un travail sur mesure</h2>
+        </div>
+
+        
+
+        <!-- Visuels graphiques -->
+        <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms" class="glass glass-hover rounded-3xl p-6 sm:p-8">
+            <h3 class="text-xl font-bold text-white mb-1">Visuels graphiques</h3>
+            <p class="text-sm text-brand-light mb-4">Design</p>
+            <ul class="grid md:grid-cols-2 md:gap-x-12">
+                <li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Affiche / Flyer</span>
+            <span class="text-right font-semibold text-white">5 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Carte de visite</span>
+            <span class="text-right font-semibold text-white">5 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Étiquette</span>
+            <span class="text-right font-semibold text-white">5 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Sticker</span>
+            <span class="text-right font-semibold text-white">3 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Menu</span>
+            <span class="text-right font-semibold text-white">5 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Kakemono</span>
+            <span class="text-right font-semibold text-white">15 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Brochure</span>
+            <span class="text-right font-semibold text-white">10 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Logo</span>
+            <span class="text-right font-semibold text-white">20 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Filtre snap</span>
+            <span class="text-right font-semibold text-white">15 000 FCFA</span>
+        </li>
+            </ul>
+            <p class="mt-6 text-xs sm:text-sm text-slate-400 italic">NB : Les tarifs indiqués concernent uniquement la création graphique, les frais d'impression ne sont pas inclus et varient selon le format, le support et la quantité.</p>
+        </div>
+
+        <!-- Photographie & vidéographie -->
+        <div class="grid lg:grid-cols-2 gap-6 mt-6">
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 100ms, transform .7s ease 100ms" class="glass glass-hover rounded-3xl p-6 sm:p-8">
+                <h3 class="text-xl font-bold text-white mb-1">Photographie</h3>
+                <p class="text-sm text-brand-light mb-4">Shootings &amp; événements</p>
+                <ul><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Photoshooting</span>
+            <span class="text-right font-semibold text-white">À partir de 15 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Photos de soutenance</span>
+            <span class="text-right font-semibold text-white">À partir de 15 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Photos de mariage</span>
+            <span class="text-right font-semibold text-white">100 000 à 150 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Shooting professionnel</span>
+            <span class="text-right font-semibold text-brand-light">Sur devis</span>
+        </li></ul>
+            </div>
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 200ms, transform .7s ease 200ms" class="glass glass-hover rounded-3xl p-6 sm:p-8">
+                <h3 class="text-xl font-bold text-white mb-1">Vidéographie</h3>
+                <p class="text-sm text-brand-light mb-4">Montage &amp; production vidéo</p>
+                <ul><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Vidéo Short (format court)</span>
+            <span class="text-right font-semibold text-white">15 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Vidéo professionnelle</span>
+            <span class="text-right font-semibold text-white">À partir de 20 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Vidéo publicitaire</span>
+            <span class="text-right font-semibold text-white">À partir de 20 000 FCFA</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Couverture vidéo d&#39;événement</span>
+            <span class="text-right font-semibold text-brand-light">Sur devis</span>
+        </li><li class="flex items-baseline justify-between gap-4 py-3 border-b border-blue-900/50 last:border-0">
+            <span class="text-slate-200">Vidéo promotionnelle</span>
+            <span class="text-right font-semibold text-brand-light">Sur devis</span>
+        </li></ul>
+            </div>
+        </div>
+        <p class="mt-6 text-xs sm:text-sm text-slate-400 italic">NB : Les tarifs peuvent varier selon les besoins, la durée et le type de prestation.</p>
+
+        <div class="text-center mt-10">
+            <button type="button" @click="$store.devis.ouvert = true" class="btn">Demander un devis</button>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="py-20 px-6">
+    <div class="max-w-4xl mx-auto text-center" x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Travaillons ensemble</h2>
+        <p class="text-slate-400 mb-10">Un projet en tête ? Parlons-en et donnons-lui vie.</p>
+        <div class="grid sm:grid-cols-2 gap-4 text-left">
+            
+            
+            
+            
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 0ms, transform .7s ease 0ms">
+            
+            <a href="tel:+22374016702" class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 transform hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+            
+                <span class="shrink-0 w-10 h-10 rounded-xl overflow-hidden border border-blue-800/60" style="background: #000000" aria-hidden="true">
+                    <img src="./static/images/Capture%20d&#39;%C3%A9cran%202026-11-01%20185647.png" alt="" class="w-full h-full object-cover" style="transform: scale(1.12); transform-origin: 50% 50%">
+                </span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-xs uppercase tracking-widest text-brand-light">Téléphone</span>
+                    <span class="block text-sm font-semibold text-white leading-tight mt-0.5 whitespace-nowrap">+223 74 01 67 02</span>
+                </span>
+            </a>
+            </div>
+            
+            
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 120ms, transform .7s ease 120ms">
+            
+            <a href="mailto:hkeita312@gmail.com" class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 transform hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+            
+                <span class="shrink-0 w-10 h-10 rounded-xl overflow-hidden border border-blue-800/60" style="background: #3d9bff" aria-hidden="true">
+                    <img src="./static/images/Capture%20d&#39;%C3%A9cran%202026-11-01%20185658.png" alt="" class="w-full h-full object-cover" style="transform: scale(1.8); transform-origin: 50% 53%">
+                </span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-xs uppercase tracking-widest text-brand-light">E-mail</span>
+                    <span class="block text-sm font-semibold text-white leading-tight mt-0.5 break-all">hkeita312@gmail.com</span>
+                </span>
+            </a>
+            </div>
+            
+            
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 240ms, transform .7s ease 240ms">
+            
+            <a href="https://www.tiktok.com/@thebig_hk5" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 transform hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+            
+                <span class="shrink-0 w-10 h-10 rounded-xl overflow-hidden border border-blue-800/60" style="background: #000000" aria-hidden="true">
+                    <img src="./static/images/Capture%20d&#39;%C3%A9cran%202026-11-01%20185719.png" alt="" class="w-full h-full object-cover" style="transform: scale(2.0); transform-origin: 46% 50%">
+                </span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-xs uppercase tracking-widest text-brand-light">TikTok</span>
+                    <span class="block text-sm font-semibold text-white leading-tight mt-0.5 break-words">@thebig_hk5</span>
+                </span>
+            </a>
+            </div>
+            
+            
+            <div x-data="{ s: false }" x-intersect.once="s = true"
+:class="s ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+style="transition: opacity .7s ease 360ms, transform .7s ease 360ms">
+            
+            <div class="flex items-center gap-3 rounded-2xl bg-[#0f1b33]/80 border border-blue-900/60 backdrop-blur-md px-3 py-3 transition duration-300 transform hover:scale-105 hover:border-brand/70 hover:shadow-lg hover:shadow-blue-500/20">
+            
+                <span class="shrink-0 w-10 h-10 rounded-xl overflow-hidden border border-blue-800/60" style="background: #f2e300" aria-hidden="true">
+                    <img src="./static/images/Capture%20d&#39;%C3%A9cran%202026-11-01%20185709.png" alt="" class="w-full h-full object-cover" style="transform: scale(1.15); transform-origin: 50% 50%">
+                </span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-xs uppercase tracking-widest text-brand-light">Snapchat</span>
+                    <span class="block text-sm font-semibold text-white leading-tight mt-0.5 break-words">HK Production</span>
+                </span>
+            </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+    </main>
+
+    <footer class="border-t border-blue-900/50 py-8 px-6 text-center text-sm text-slate-500">
+        © 2026 Hamed Keita — HK Production. Tous droits réservés.
+    </footer>
+
+    <!-- Modale de devis (état global Alpine.store('devis')) : envoie le message vers WhatsApp -->
+    <div id="devis-modal"
+         x-data="{
+            nom: '', prestation: 'Design Graphique', description: '', budget: '', erreur: false,
+            envoyer() {
+                if (!this.nom.trim() || !this.description.trim()) { this.erreur = true; return; }
+                const lignes = ['*Demande de devis — HK Production*', '',
+                    '*Nom :* ' + this.nom.trim(),
+                    '*Prestation :* ' + this.prestation,
+                    '*Description :* ' + this.description.trim()];
+                if (this.budget.trim()) lignes.push('*Budget estimé :* ' + this.budget.trim());
+                window.open('https://wa.me/22374016702?text=' + encodeURIComponent(lignes.join('\n')), '_blank', 'noopener');
+                this.erreur = false;
+                $store.devis.ouvert = false;
+            }
+         }"
+         @keydown.escape.window="$store.devis.ouvert = false"
+         x-show="$store.devis.ouvert" x-cloak x-transition.opacity
+         @click.self="$store.devis.ouvert = false"
+         class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-night/80 backdrop-blur-sm"
+         role="dialog" aria-modal="true" aria-labelledby="devis-titre">
+        <form @submit.prevent="envoyer()" novalidate
+              class="glass w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl shadow-blue-500/20">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="uppercase tracking-[0.3em] text-xs text-brand-light mb-2">Devis gratuit</p>
+                    <h2 id="devis-titre" class="text-2xl font-extrabold text-white">Demander un devis</h2>
+                </div>
+                <button type="button" @click="$store.devis.ouvert = false" class="text-slate-400 hover:text-white" aria-label="Fermer">✕</button>
+            </div>
+
+            <label class="block">
+                <span class="text-sm text-slate-300">Nom / Prénom</span>
+                <input type="text" x-model="nom" autocomplete="name" placeholder="Votre nom complet"
+                       class="mt-1 w-full rounded-xl bg-night/60 border border-blue-800/60 px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand">
+            </label>
+            <label class="block">
+                <span class="text-sm text-slate-300">Type de prestation</span>
+                <select x-model="prestation"
+                        class="mt-1 w-full rounded-xl bg-night border border-blue-800/60 px-4 py-2.5 text-white focus:outline-none focus:border-brand">
+                    <option>Design Graphique</option>
+                    <option>Photographie</option>
+                    <option>Vidéographie</option>
+                    <option>Autre</option>
+                </select>
+            </label>
+            <label class="block">
+                <span class="text-sm text-slate-300">Description du projet / besoins</span>
+                <textarea x-model="description" rows="4" placeholder="Décrivez brièvement votre projet…"
+                          class="mt-1 w-full rounded-xl bg-night/60 border border-blue-800/60 px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand"></textarea>
+            </label>
+            <label class="block">
+                <span class="text-sm text-slate-300">Budget estimé <span class="text-slate-500">(optionnel)</span></span>
+                <input type="text" x-model="budget" placeholder="Ex. 25 000 FCFA"
+                       class="mt-1 w-full rounded-xl bg-night/60 border border-blue-800/60 px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand">
+            </label>
+
+            <p x-show="erreur" x-cloak class="text-sm text-red-300">Merci d'indiquer votre nom et la description du projet.</p>
+            <button type="submit" class="btn w-full">Envoyer via WhatsApp</button>
+        </form>
+    </div>
+</body>
+</html>
